@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Movie } from '@/interfaces/movie-catalog.interface.ts';
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card.tsx';
@@ -6,45 +6,57 @@ import { Button } from '@/components/ui/button.tsx';
 import axios from 'axios';
 import { MovieForm } from '@/components/ui/movie-form.tsx';
 import { Link } from 'react-router-dom';
-import {API_URL} from "@/components/pages/constants/movie-constants.ts";
+import { API_URL } from '@/components/pages/constants/movie-constants.ts';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 export const MovieCatalogPage = () => {
-  const [movies, setMovies] = useState<Array<Movie>>([]);
   const [filter, setFilter] = useState<number>(16);
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    const fetchMovies = async () => {
-      try {
-        const response = await axios.get(API_URL);
-        setMovies(response.data);
-      } catch (error) {
-        console.error('Error fetching movies:', error);
-      }
-    };
-    fetchMovies();
-  }, []);
+  const {
+    data: movies = [],
+    isLoading,
+    isError,
+  } = useQuery({
+    queryKey: ['movies'],
+    queryFn: async () => {
+      const response = await axios.get(API_URL);
+      return response.data;
+    },
+  });
 
-  const addMovie = async (movie: Movie) => {
-    try {
+  const addMovieMutation = useMutation({
+    mutationFn: async (movie: Movie) => {
       const response = await axios.post(API_URL, movie);
-      setMovies([...movies, response.data]);
-    } catch (error) {
-      console.error('Error adding movie:', error);
-    }
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['movies'] });
+    },
+  });
+
+  const handleAddMovie = (movie: Movie) => {
+    addMovieMutation.mutate(movie);
   };
 
-  const deleteMovie = async (id: string) => {
-    try {
+  const deleteMovieMutation = useMutation({
+    mutationFn: async (id: string) => {
       await axios.delete(`${API_URL}/${id}`);
-      setMovies(movies.filter((movie) => movie._id !== id));
-    } catch (error) {
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['movies'] });
+    },
+    onError: (error: Error) => {
       console.error('Error deleting movie:', error);
-    }
-  };
+    },
+  });
 
   const filteredMovies = filter
-    ? movies.filter((movie) => movie.ageLimit >= filter)
+    ? movies.filter((movie: Movie) => movie.ageLimit >= filter)
     : movies;
+
+  if (isLoading) return <p>Loading movies...</p>;
+  if (isError) return <p>Error loading movies!</p>;
 
   return (
     <div className="min-h-screen bg-gray-100 p-4">
@@ -58,12 +70,7 @@ export const MovieCatalogPage = () => {
 
         <div className="mb-6">
           <h2 className="text-xl font-bold mb-4">Add new movie</h2>
-          <MovieForm
-            onSubmit={(movie: Movie) => {
-              addMovie(movie);
-            }}
-            onCancel={() => null}
-          />
+          <MovieForm onSubmit={handleAddMovie} onCancel={() => null} />
         </div>
 
         <div className="mb-4">
@@ -81,10 +88,12 @@ export const MovieCatalogPage = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredMovies.map((movie) => (
+          {filteredMovies.map((movie: Movie) => (
             <Card key={movie._id} className="shadow-lg">
               <CardContent>
-                <h3 className="text-lg font-bold mb-2">{movie.title}</h3>
+                <h3 className="text-lg font-bold mb-2" key={movie._id}>
+                  {movie.title}
+                </h3>
                 <p className="text-gray-600 mb-2">{movie.description}</p>
                 <p className="text-sm text-gray-500">
                   Age limit: {movie.ageLimit}+
@@ -97,7 +106,7 @@ export const MovieCatalogPage = () => {
                     variant="destructive"
                     onClick={() => {
                       if (movie._id) {
-                        deleteMovie(movie._id);
+                        deleteMovieMutation.mutate(movie._id);
                       }
                     }}
                   >

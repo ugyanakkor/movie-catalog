@@ -12,7 +12,7 @@ export const MovieForm: React.FC<MovieFormProps> = ({ onSubmit }) => {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
     const movie = { title, description, ageLimit };
-    onSubmit({...movie, ageLimit: movie.ageLimit ?? 16});
+    onSubmit({ ...movie, ageLimit: movie.ageLimit ?? 16 });
 
     setTitle('');
     setDescription('');
@@ -44,11 +44,12 @@ export const MovieForm: React.FC<MovieFormProps> = ({ onSubmit }) => {
         <label className="block mb-2">Age limit:</label>
         <input
           type="number"
-          value={ageLimit ?? ""}
+          value={ageLimit ?? ''}
           onChange={(event) => {
-              const inputValue = event.target.value;
-              setAgeLimit(inputValue === "" ? null : parseInt(inputValue, 10));
-          }}          className="p-2 border rounded w-full"
+            const inputValue = event.target.value;
+            setAgeLimit(inputValue === '' ? null : parseInt(inputValue, 10));
+          }}
+          className="p-2 border rounded w-full"
           required
         />
       </div>
