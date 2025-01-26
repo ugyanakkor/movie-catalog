@@ -46,7 +46,7 @@ export const MovieForm: React.FC<MovieFormProps> = ({ onSubmit }) => {
           type="number"
           value={ageLimit ?? ""}
           onChange={(event) => {
-              const inputValue = event.target.value; // Extract the value from the event
+              const inputValue = event.target.value;
               setAgeLimit(inputValue === "" ? null : parseInt(inputValue, 10));
           }}          className="p-2 border rounded w-full"
           required

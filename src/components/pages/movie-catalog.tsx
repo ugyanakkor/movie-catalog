@@ -12,7 +12,6 @@ export const MovieCatalogPage = () => {
   const [movies, setMovies] = useState<Array<Movie>>([]);
   const [filter, setFilter] = useState<number>(16);
 
-  // Fetch movies from API
   useEffect(() => {
     const fetchMovies = async () => {
       try {
@@ -25,7 +24,6 @@ export const MovieCatalogPage = () => {
     fetchMovies();
   }, []);
 
-  // Add a new movie
   const addMovie = async (movie: Movie) => {
     try {
       const response = await axios.post(API_URL, movie);
@@ -35,7 +33,6 @@ export const MovieCatalogPage = () => {
     }
   };
 
-  // Delete a movie
   const deleteMovie = async (id: string) => {
     try {
       await axios.delete(`${API_URL}/${id}`);
@@ -45,7 +42,6 @@ export const MovieCatalogPage = () => {
     }
   };
 
-  // Filter movies by age rating
   const filteredMovies = filter
     ? movies.filter((movie) => movie.ageLimit >= filter)
     : movies;
