@@ -1,50 +1,26 @@
-# React + TypeScript + Vite
+## Installation
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+To install the packages, firstly install [pnpm](https://pnpm.io/installation), than run:
 
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ["./tsconfig.node.json", "./tsconfig.app.json"],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-});
+```bash
+pnpm install
 ```
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+## Development server
 
-```js
-// eslint.config.js
-import react from "eslint-plugin-react";
+To start a local development server with [Vite](https://vite.dev/), run:
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: "18.3" } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs["jsx-runtime"].rules,
-  },
-});
+```bash
+pnpm start
 ```
+
+Once the server is running, open your browser and navigate to `http://localhost:5173/`. The application will automatically reload whenever you modify any of the source files.
+
+NOTE:
+Here is my API key, which can be used for testing, or you can generate your own and setup:
+9f0db0741fd44187850b6839d20e4b60
+
+Replace the <API_KEY> in constants.ts
+
+This is not secure solution, because never put an API key into version control, but in this case
+this is not a production and I want to help you to setup the environment.
