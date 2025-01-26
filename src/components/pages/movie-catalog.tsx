@@ -9,7 +9,7 @@ import { Link } from 'react-router-dom';
 
 export const MovieCatalogPage = () => {
   const [movies, setMovies] = useState<Array<Movie>>([]);
-  const [filter, setFilter] = useState<number>(0);
+  const [filter, setFilter] = useState<number>(16);
 
   const API_URL =
     'https://crudcrud.com/api/9f191d6b2a8449339f3047f858eaca3a/movies';
