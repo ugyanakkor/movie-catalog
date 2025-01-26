@@ -6,13 +6,11 @@ import { Button } from '@/components/ui/button.tsx';
 import axios from 'axios';
 import { MovieForm } from '@/components/ui/movie-form.tsx';
 import { Link } from 'react-router-dom';
+import {API_URL} from "@/components/pages/constants/movie-constants.ts";
 
 export const MovieCatalogPage = () => {
   const [movies, setMovies] = useState<Array<Movie>>([]);
   const [filter, setFilter] = useState<number>(16);
-
-  const API_URL =
-    'https://crudcrud.com/api/9f191d6b2a8449339f3047f858eaca3a/movies';
 
   // Fetch movies from API
   useEffect(() => {

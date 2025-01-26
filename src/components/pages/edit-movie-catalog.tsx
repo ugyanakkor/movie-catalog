@@ -3,9 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Button } from '@/components/ui/button';
 import { Movie } from '@/interfaces/movie-catalog.interface';
-
-const API_URL =
-  'https://crudcrud.com/api/9f191d6b2a8449339f3047f858eaca3a/movies';
+import {API_URL} from "@/components/pages/constants/movie-constants.ts";
 
 export const EditMoviePage: React.FC = () => {
   const { id } = useParams<{ id: string }>();
