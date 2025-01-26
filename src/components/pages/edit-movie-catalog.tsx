@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Movie } from '@/interfaces/movie-catalog.interface';
 import { API_URL } from '@/components/pages/constants/movie-constants.ts';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useForm } from 'react-hook-form';
 
 const fetchMovie = async (id: string): Promise<Movie> => {
   const response = await axios.get(`${API_URL}/${id}`);
@@ -36,6 +37,19 @@ export const EditMoviePage: React.FC = () => {
     enabled: !!id,
   });
 
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm<Movie>({
+    defaultValues: {
+      title: '',
+      description: '',
+      ageLimit: 16,
+    },
+  });
+
   const updateMovieMutation = useMutation({
     mutationFn: async (movie: Movie) => updateMovie(id!, movie),
     onSuccess: () => {
@@ -49,41 +63,17 @@ export const EditMoviePage: React.FC = () => {
     },
   });
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (!movie) return;
-    updateMovieMutation.mutate(movie);
+  const onSubmit = (data: Movie) => {
+    updateMovieMutation.mutate(data);
   };
 
-  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  React.useEffect(() => {
     if (movie) {
-      queryClient.setQueryData(['movie', id], {
-        ...movie,
-        title: e.target.value,
-      });
+      setValue('title', movie.title);
+      setValue('description', movie.description);
+      setValue('ageLimit', movie.ageLimit);
     }
-  };
-
-  const handleDescriptionChange = (
-    e: React.ChangeEvent<HTMLTextAreaElement>
-  ) => {
-    if (movie) {
-      queryClient.setQueryData(['movie', id], {
-        ...movie,
-        description: e.target.value,
-      });
-    }
-  };
-
-  const handleAgeLimitChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (movie) {
-      const ageLimit = +e.target.value;
-      queryClient.setQueryData(['movie', id], {
-        ...movie,
-        ageLimit,
-      });
-    }
-  };
+  }, [movie, setValue]);
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -98,35 +88,48 @@ export const EditMoviePage: React.FC = () => {
       <div className="container mx-auto">
         <h1 className="text-2xl font-bold mb-6">Edit Movie</h1>
         {movie && (
-          <form onSubmit={handleSubmit} className="p-4 border rounded">
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="p-4 border rounded"
+          >
             <div className="mb-4">
               <label className="block mb-2">Title:</label>
               <input
-                type="text"
-                value={movie.title}
-                onChange={handleTitleChange}
+                {...register('title', { required: 'Title is required' })}
                 className="p-2 border rounded w-full"
                 required
               />
+              {errors.title && (
+                <p className="text-red-500">{errors.title.message}</p>
+              )}
             </div>
             <div className="mb-4">
               <label className="block mb-2">Description:</label>
               <textarea
-                value={movie.description}
-                onChange={handleDescriptionChange}
+                {...register('description', {
+                  required: 'Description is required',
+                })}
                 className="p-2 border rounded w-full"
                 required
               />
+              {errors.description && (
+                <p className="text-red-500">{errors.description.message}</p>
+              )}
             </div>
             <div className="mb-4">
               <label className="block mb-2">Age limit:</label>
               <input
                 type="number"
-                value={movie.ageLimit}
-                onChange={handleAgeLimitChange}
+                {...register('ageLimit', {
+                  required: 'Age limit is required',
+                  min: 1,
+                })}
                 className="p-2 border rounded w-full"
                 required
               />
+              {errors.ageLimit && (
+                <p className="text-red-500">{errors.ageLimit.message}</p>
+              )}
             </div>
             <div className="flex justify-end gap-4">
               <Button type="submit">Save</Button>
