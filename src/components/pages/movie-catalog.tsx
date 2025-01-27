@@ -25,7 +25,7 @@ export const MovieCatalogPage = () => {
     },
   });
 
-  const addMovieMutation = useMutation({
+  const { mutateAsync } = useMutation({
     mutationFn: async (movie: Movie) => {
       const response = await axios.post(API_URL, movie);
       return response.data;
@@ -33,10 +33,17 @@ export const MovieCatalogPage = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['movies'] });
     },
+    onError: (error: Error) => {
+      console.error('Error adding movie:', error);
+    },
   });
 
-  const handleAddMovie = (movie: Movie) => {
-    addMovieMutation.mutate(movie);
+  const handleAddMovie = async (movie: Movie) => {
+    try {
+      await mutateAsync(movie);
+    } catch (error) {
+      console.error('Error adding movie:', error);
+    }
   };
 
   const deleteMovieMutation = useMutation({
@@ -50,6 +57,14 @@ export const MovieCatalogPage = () => {
       console.error('Error deleting movie:', error);
     },
   });
+
+  const handleDeleteMovie = async (id: string) => {
+    try {
+      await deleteMovieMutation.mutateAsync(id);
+    } catch (error) {
+      console.error('Error adding movie:', error);
+    }
+  };
 
   const filteredMovies = filter
     ? movies.filter((movie: Movie) => movie.ageLimit >= filter)
@@ -106,7 +121,7 @@ export const MovieCatalogPage = () => {
                     variant="destructive"
                     onClick={() => {
                       if (movie._id) {
-                        deleteMovieMutation.mutate(movie._id);
+                        handleDeleteMovie(movie._id);
                       }
                     }}
                   >

@@ -50,21 +50,25 @@ export const EditMoviePage: React.FC = () => {
     },
   });
 
-  const updateMovieMutation = useMutation({
+  const { mutateAsync } = useMutation({
     mutationFn: async (movie: Movie) => updateMovie(id!, movie),
     onSuccess: () => {
       if (id) {
         queryClient.invalidateQueries({ queryKey: ['movie', id] });
       }
-      navigate('/');
     },
     onError: (error: Error) => {
       console.error('Error updating movie:', error);
     },
   });
 
-  const onSubmit = (data: Movie) => {
-    updateMovieMutation.mutate(data);
+  const onSubmit = async (data: Movie) => {
+    try {
+      await mutateAsync(data);
+      navigate('/'); // Move navigation here for better control
+    } catch (error) {
+      console.error('Error during submission:', error);
+    }
   };
 
   React.useEffect(() => {
